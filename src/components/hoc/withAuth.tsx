@@ -16,7 +16,7 @@ export function withAuth<P extends WithAuthProps>(
   // Create a new component that will handle the auth logic
   const AuthWrapper: React.FC<Omit<P, keyof WithAuthProps>> = (props) => {
     const [user, setUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState(true)
+    // const [loading, setLoading] = useState(true)
     const router = useNavigate()
 
     useEffect(() => {
@@ -35,7 +35,7 @@ export function withAuth<P extends WithAuthProps>(
           console.error('Error checking auth status:', error)
           router('/app')
         } finally {
-          setLoading(false)
+          // setLoading(false)
         }
       }
 
