@@ -1,4 +1,5 @@
 import AdminLayout from "@/Layout/AdminLayout";
+import { withAuth } from "@/components/hoc/withAuth";
 
 function AdminDashboard(){
     return (
@@ -8,4 +9,4 @@ function AdminDashboard(){
     )
 }
 
-export default AdminDashboard;
+export default withAuth(AdminDashboard);

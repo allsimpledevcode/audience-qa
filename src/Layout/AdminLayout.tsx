@@ -1,11 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import UserAvatar from "@/components/container/AuthButton";
 
 interface AdminLayoutProps {
     children: ReactNode,
@@ -36,16 +31,7 @@ function AdminLayout({ children, title }: AdminLayoutProps) {
                         <h2 className="font-semibold text-xl">{title}</h2>
                     </div>
                     <div>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Avatar className="w-8 h-8">
-                                    <AvatarFallback>{"A"}</AvatarFallback>
-                                </Avatar>
-                            </PopoverTrigger>
-                            <PopoverContent align="end" className="w-48">
-                                <h1>sample page</h1>
-                            </PopoverContent>
-                        </Popover>
+                        <UserAvatar />
                     </div>
                 </div>
             </header>

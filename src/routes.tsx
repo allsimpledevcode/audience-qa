@@ -9,6 +9,7 @@ import AdminTeam from "@/routes/admin/Team.tsx";
 import Login from "@/routes/admin/Login.tsx";
 
 import EventHome from "@/routes/user/EventHome.tsx";
+import Signup from "@/routes/Signup.tsx";
 import NotFoundPage from "./NotFound.tsx";
 
 
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
         path: "/",
         element: <App />,
         errorElement: <NotFoundPage />,
+    },
+    {
+        path: "/signup",
+        element: <Signup />
     },
     {
         path: "/app",

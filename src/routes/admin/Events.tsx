@@ -24,6 +24,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/utils";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card } from "@/components/ui/card";
+import { withAuth } from "@/components/hoc/withAuth";
 
 interface Event {
     name: string,
@@ -112,4 +113,4 @@ function AdminEvents() {
     )
 }
 
-export default AdminEvents;
+export default withAuth(AdminEvents);
