@@ -10,7 +10,6 @@ import EventReact from "@/components/container/EventReact";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton"
-import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface Count {
     count: number;
