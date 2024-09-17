@@ -25,7 +25,6 @@ function EventQuestions({ event }: { event: { name: string, event_id: string } }
     const { toast } = useToast()
 
     const fetchQuestions = async (order: boolean = false) => {
-        setLoading(true);
         const { data } = await supabase.from("live_questions").select(`*, upvotes( count )`).eq("associated_event_id", event.event_id).order("created_at", { ascending: order });
 
         if (data && data.length > 0) {
@@ -50,27 +49,31 @@ function EventQuestions({ event }: { event: { name: string, event_id: string } }
             })
             setName('');
             setQuestion('');
+            setLoading(true);
             fetchQuestions();
         }
     }
 
-    const refreshData = () => {
-        fetchQuestions()
+    const refreshData = (payload: { new: { associated_event_id: string } }) => {
+        if(payload.new.associated_event_id === event.event_id) {
+            fetchQuestions()
+        }
     }
 
     useEffect(() => {
         // Listen to inserts
         supabase
             .channel('live_questions')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_questions', filter: `associated_event_id=${event.event_id}` }, refreshData)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_questions' }, refreshData)
             .subscribe()
 
+        setLoading(true);
         fetchQuestions()
         
         return () => {
             supabase
             .channel('live_questions')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_questions', filter: `associated_event_id=${event.event_id}` }, refreshData)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_questions' }, refreshData)
             .unsubscribe()
         }
     }, [event.event_id])
@@ -99,6 +102,7 @@ function EventQuestions({ event }: { event: { name: string, event_id: string } }
 
                 <Tabs defaultValue="recent" className="w-full" onValueChange={
                     (value: string) => {
+                        setLoading(true);
                         fetchQuestions(value !== 'recent')
                     }}>
                     <TabsList className="w-full bg-transparent mb-4">
