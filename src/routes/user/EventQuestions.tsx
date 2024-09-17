@@ -10,6 +10,7 @@ import EventReact from "@/components/container/EventReact";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton"
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface Count {
     count: number;
@@ -54,7 +55,7 @@ function EventQuestions({ event }: { event: { name: string, event_id: string } }
         }
     }
 
-    const refreshData = (payload: { new: { associated_event_id: string } }) => {
+    const refreshData = (payload: any) => {
         if(payload.new.associated_event_id === event.event_id) {
             fetchQuestions()
         }
@@ -63,7 +64,7 @@ function EventQuestions({ event }: { event: { name: string, event_id: string } }
     useEffect(() => {
         // Listen to inserts
         supabase
-            .channel('live_questions')
+            .channel('room1')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'live_questions' }, refreshData)
             .subscribe()
 
@@ -72,7 +73,7 @@ function EventQuestions({ event }: { event: { name: string, event_id: string } }
         
         return () => {
             supabase
-            .channel('live_questions')
+            .channel('room1')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'live_questions' }, refreshData)
             .unsubscribe()
         }
