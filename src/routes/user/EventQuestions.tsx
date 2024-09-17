@@ -9,6 +9,7 @@ import { formatDistance, subDays } from "date-fns";
 import EventReact from "@/components/container/EventReact";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Count {
     count: number;
@@ -18,16 +19,19 @@ interface Question { name: string; created_at: string; question: string, upvotes
 
 function EventQuestions({ event }: { event: { name: string, event_id: string } }) {
     const [questions, setQuestions] = useState<Question[]>([])
+    const [loading, setLoading] = useState(true)
     const [question, setQuestion] = useState('')
     const [name, setName] = useState('')
     const { toast } = useToast()
 
     const fetchQuestions = async (order: boolean = false) => {
+        setLoading(true);
         const { data } = await supabase.from("live_questions").select(`*, upvotes( count )`).eq("associated_event_id", event.event_id).order("created_at", { ascending: order });
 
         if (data && data.length > 0) {
             setQuestions(data)
         }
+        setLoading(false)
     }
 
     const submitQuestion = async () => {
@@ -50,13 +54,30 @@ function EventQuestions({ event }: { event: { name: string, event_id: string } }
         }
     }
 
-    useEffect(() => {
+    const refreshData = () => {
         fetchQuestions()
+    }
+
+    useEffect(() => {
+        // Listen to inserts
+        supabase
+            .channel('live_questions')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_questions', filter: `associated_event_id=${event.event_id}` }, refreshData)
+            .subscribe()
+
+        fetchQuestions()
+        
+        return () => {
+            supabase
+            .channel('live_questions')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_questions', filter: `associated_event_id=${event.event_id}` }, refreshData)
+            .unsubscribe()
+        }
     }, [event.event_id])
 
     return (
         <EventLayout title={event?.name}>
-            <form onSubmit={(e) => e.preventDefault()} className="relative shadow-md border border-gray-200 rounded-xl w-full p-4">
+            <form onSubmit={(e) => e.preventDefault()} className="relative shadow-md bg-white border border-gray-200 rounded-xl w-full p-4">
                 <textarea value={question} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                     setQuestion(e.target.value)
                 }} className="min-h-[70px] w-full outline-none resize-none" placeholder="Enter your question here!!"></textarea>
@@ -75,76 +96,90 @@ function EventQuestions({ event }: { event: { name: string, event_id: string } }
                 </div>
             </form>
             <section className="mt-4">
-                <Tabs defaultValue="recent" className="w-full" onValueChange={(value: string) => {
-                    fetchQuestions(value !== 'recent')
-                }}>
-                    <TabsList className="w-full">
-                        <TabsTrigger value="recent" className="w-[50%]">Recent Questions</TabsTrigger>
-                        <TabsTrigger value="old" className="w-[50%]">Oldest Questions</TabsTrigger>
+
+                <Tabs defaultValue="recent" className="w-full" onValueChange={
+                    (value: string) => {
+                        fetchQuestions(value !== 'recent')
+                    }}>
+                    <TabsList className="w-full bg-transparent mb-4">
+                        <TabsTrigger value="recent" className="w-[50%] py-3">Recent Questions</TabsTrigger>
+                        <TabsTrigger value="old" className="w-[50%] py-3">Oldest Questions</TabsTrigger>
                     </TabsList>
                     <TabsContent value="recent">
-                        <div className="flex flex-col gap-4">
-                            {questions.length > 0 ? questions.map((q: Question) => (
-                                <Card className="shadow-none p-5">
-                                    <div className="flex gap-4 items-center">
-                                        <Avatar>
-                                            <AvatarFallback>{q?.name[0]?.toUpperCase() || "A"}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1">
-                                            <p>{q.name}</p>
-                                            <span className="mt-1 block text-xs text-gray-500 font-light">{formatDistance(subDays(new Date(q.created_at), 0), new Date(), { addSuffix: true, })}</span>
+                        {
+                            loading ? (
+                                <Skeleton className="h-3 w-[250px]" />
+                            ) : (
+                                <div className="flex flex-col gap-4">
+                                    {questions.length > 0 ? questions.map((q: Question) => (
+                                        <Card className="shadow-none p-5">
+                                            <div className="flex gap-4 items-center">
+                                                <Avatar>
+                                                    <AvatarFallback>{q?.name[0]?.toUpperCase() || "A"}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex-1">
+                                                    <p>{q.name}</p>
+                                                    <span className="mt-1 block text-xs text-gray-500 font-light">{formatDistance(subDays(new Date(q.created_at), 0), new Date(), { addSuffix: true, })}</span>
+                                                </div>
+                                                <div>
+                                                    <EventReact count={q?.upvotes} qId={q.id} />
+                                                </div>
+                                            </div>
+                                            <div className="p-2 mt-2">
+                                                <p className="text-sm text-slate-700">{q.question}</p>
+                                            </div>
+                                        </Card>
+                                    )) : (
+                                        <div className="min-h-[320px] w-full text-center flex justify-center items-center">
+                                            <div className="flex flex-col items-center">
+                                                <QuestionMarkCircledIcon className="w-14 h-14 text-slate-400 text-center" />
+                                                <p className="text-slate-400 mt-3">Let us know your thoughts or ask a question.</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <EventReact count={q?.upvotes} qId={q.id} />
-                                        </div>
-                                    </div>
-                                    <div className="p-2 mt-2">
-                                        <p className="text-sm text-slate-700">{q.question}</p>
-                                    </div>
-                                </Card>
-                            )) : (
-                                <div className="min-h-[320px] w-full text-center flex justify-center items-center">
-                                    <div className="flex flex-col items-center">
-                                        <QuestionMarkCircledIcon className="w-14 h-14 text-slate-400 text-center" />
-                                        <p className="text-slate-400 mt-3">Let us know your thoughts or ask a question.</p>
-                                    </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
+                            )
+                        }
                     </TabsContent>
                     <TabsContent value="old">
-                        <div className="flex flex-col gap-4">
-                            {questions.length > 0 ? questions.map((q: Question) => (
-                                <Card className="shadow-none p-5">
-                                    <div className="flex gap-4 items-center">
-                                        <Avatar>
-                                            <AvatarFallback>{q?.name[0]?.toUpperCase() || "A"}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1">
-                                            <p>{q.name}</p>
-                                            <span className="mt-1 block text-xs text-gray-500 font-light">{formatDistance(subDays(new Date(q.created_at), 0), new Date(), { addSuffix: true, })}</span>
+                        {
+                            loading ? (
+                                <Skeleton className="h-3 w-[250px]" />
+                            ) : (
+                                <div className="flex flex-col gap-4">
+                                    {questions.length > 0 ? questions.map((q: Question) => (
+                                        <Card className="shadow-none p-5">
+                                            <div className="flex gap-4 items-center">
+                                                <Avatar>
+                                                    <AvatarFallback>{q?.name[0]?.toUpperCase() || "A"}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex-1">
+                                                    <p>{q.name}</p>
+                                                    <span className="mt-1 block text-xs text-gray-500 font-light">{formatDistance(subDays(new Date(q.created_at), 0), new Date(), { addSuffix: true, })}</span>
+                                                </div>
+                                                <div>
+                                                    <EventReact count={q?.upvotes} qId={q.id} />
+                                                </div>
+                                            </div>
+                                            <div className="p-2 mt-2">
+                                                <p className="text-sm text-slate-700">{q.question}</p>
+                                            </div>
+                                        </Card>
+                                    )) : (
+                                        <div className="min-h-[320px] w-full text-center flex justify-center items-center">
+                                            <div className="flex flex-col items-center">
+                                                <QuestionMarkCircledIcon className="w-14 h-14 text-slate-400 text-center" />
+                                                <p className="text-slate-400 mt-3">Let us know your thoughts or ask a question.</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <EventReact count={q?.upvotes} qId={q.id} />
-                                        </div>
-                                    </div>
-                                    <div className="p-2 mt-2">
-                                        <p className="text-sm text-slate-700">{q.question}</p>
-                                    </div>
-                                </Card>
-                            )) : (
-                                <div className="min-h-[320px] w-full text-center flex justify-center items-center">
-                                    <div className="flex flex-col items-center">
-                                        <QuestionMarkCircledIcon className="w-14 h-14 text-slate-400 text-center" />
-                                        <p className="text-slate-400 mt-3">Let us know your thoughts or ask a question.</p>
-                                    </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
+                            )
+                        }
                     </TabsContent>
                 </Tabs>
             </section>
-        </EventLayout>
+        </EventLayout >
     )
 }
 

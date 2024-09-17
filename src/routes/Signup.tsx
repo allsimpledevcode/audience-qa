@@ -16,10 +16,35 @@ export default function SignUpPage() {
     const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
 
+    const validateForm = () => {
+        if (!email) {
+            setError('Email is required')
+            return false
+        }
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            setError('Invalid email format')
+            return false
+        }
+        if (!password) {
+            setError('Password is required')
+            return false
+        }
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters long')
+            return false
+        }
+        return true
+    }
+
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault()
-        setIsLoading(true)
         setError(null)
+
+        if (!validateForm()) {
+            return
+        }
+
+        setIsLoading(true)
 
         try {
             const { data, error } = await supabase.auth.signUp({

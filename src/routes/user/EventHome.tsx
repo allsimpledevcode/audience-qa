@@ -23,7 +23,7 @@ function EventHome() {
 
     const fetchEventData = async () => {
         setLoading(true);
-        const { data, error } = await supabase.from("events").select().eq("event_id", eventId)
+        const { data, error } = await supabase.from("events").select().eq("event_id", eventId);
 
         if (error) {
             setEvent(null);

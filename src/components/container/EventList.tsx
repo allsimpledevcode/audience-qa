@@ -4,6 +4,7 @@ import {
 import { Label } from "@/components/ui/label";
 import EventAction from "./EventAction";
 import { formatDistance, subDays } from "date-fns";
+import { RocketIcon } from "@radix-ui/react-icons";
 
 interface Event {
     name: string,
@@ -18,6 +19,7 @@ interface EventListProps {
 }
 
 function EventList({ events, refreshList }: EventListProps) {
+
     return (
         <>
             {events?.length > 0 ? (
@@ -29,13 +31,20 @@ function EventList({ events, refreshList }: EventListProps) {
                                 <Label className="text-xs font-light">Create at: {formatDistance(subDays(new Date(event.created_at), 0), new Date(), { addSuffix: true })}</Label>
                             </div>
                             <div>
-                                <EventAction event={event} refreshList={refreshList}/>
+                                <EventAction event={event} refreshList={refreshList} />
                             </div>
                         </Card>
                     ))}
                 </section>
             ) : (
-                <h2>No Data found</h2>
+                <div className="max-w-[780px] m-auto text-center">
+                    <div className="min-h-[320px] w-full text-center flex justify-center items-center">
+                        <div className="flex flex-col items-center">
+                            <RocketIcon className="w-14 h-14 text-slate-400 text-center" />
+                            <p className="text-slate-400 mt-3">Start your events here!</p>
+                        </div>
+                    </div>
+                </div>
             )
             }
         </>

@@ -20,11 +20,12 @@ import { Button } from "@/components/ui/button"
 
 import EventForm from "@/components/container/EventForm";
 import EventList from "@/components/container/EventList";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { supabase } from "@/utils";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card } from "@/components/ui/card";
 import { withAuth } from "@/components/hoc/withAuth";
+import { AppContext } from "@/components/AppContext";
 
 interface Event {
     name: string,
@@ -34,6 +35,7 @@ interface Event {
 }
 
 function AdminEvents() {
+    const appContext = useContext(AppContext)
     const [events, setEvents] = useState<Event[]>([]);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -49,7 +51,7 @@ function AdminEvents() {
 
     const fetchEvents = async () => {
         setLoading(true);
-        const { data } = await supabase.from("events").select().order("created_at", { ascending: false })
+        const { data } = await supabase.from("events").select().eq('user_id', appContext?.user?.id).order("created_at", { ascending: false })
 
         if(data && data.length > 0) {
             setEvents(data);
@@ -59,8 +61,10 @@ function AdminEvents() {
 
 
     useEffect(() => {
-        fetchEvents()
-    }, [])
+        if(appContext?.user?.id) {
+            fetchEvents()
+        }
+    }, [appContext?.user?.id])
 
     return (
         <AdminLayout title="Events">

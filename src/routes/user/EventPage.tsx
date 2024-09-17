@@ -1,6 +1,6 @@
 function EventPage() {
     return (
-        <h1>Event Page</h1>
+        <h1>No Event found</h1>
     )
 }
 

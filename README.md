@@ -1,50 +1,80 @@
-# React + TypeScript + Vite
+# Audience QA Full Stack App
+This project is a React application integrated with Supabase for backend services, including authentication and database management. Follow the instructions below to set up and run the project.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![banner](https://github.com/user-attachments/assets/779f84ed-5902-4fec-b308-aed45fdc521d)
 
-Currently, two official plugins are available:
+## Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Prerequisites](#prerequisites)
+- [Setup Instructions](#setup-instructions)
+  - [Clone the Repository](#1-clone-the-repository)
+  - [Create a Supabase Project](#2-create-a-supabase-project)
+  - [Install Dependencies](#3-install-dependencies)
+  - [Configure Supabase](#4-configure-supabase)
+  - [Run the Application](#5-run-the-application)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Before you start, ensure you have the following installed:
 
-- Configure the top-level `parserOptions` property like this:
+- [Node.js](https://nodejs.org/) (preferably the latest LTS version)
+- [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/) (optional)
+- A code editor like [Visual Studio Code](https://code.visualstudio.com/)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Setup Instructions
+
+### 1. Clone the Repository
+
+Clone the repository to your local machine:
+
+```bash
+git clone git@github.com:allsimpledevcode/audience-qa.git
+cd audience-qa
 ```
+Replace yourusername and your-repo-name with your GitHub username and repository name.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 2. Create a Supabase Project
+Sign up for a free account on Supabase.
+Create a new project in your Supabase dashboard.
+`Note down the SUPABASE_URL and SUPABASE_ANON_KEY from the "Settings" -> "API" section of your Supabase project`.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+### 3. Install Dependencies
+Install the required npm packages:
 ```
+npm install
+```
+or if you’re using Yarn:
+```
+yarn install
+```
+### 4. Configure Supabase
+Add your Supabase credentials to the `src/utils.ts` file:
+```
+createClient("<SUPABASE_URL>", "<SUPABASE_ANON_KEY>")
+```
+Replace your-supabase-url and your-supabase-anon-key with the values obtained from your Supabase project.
+
+### 5. Run the Application
+Start the development server:
+```
+npm run dev
+```
+or if you’re using Yarn:
+
+```
+yarn dev
+```
+Open your browser and navigate to `http://localhost:5173/` to view the application.
+
+### Usage
+**Authentication**: Users can sign in using email and password.
+**Data Fetching**: The application fetches data from a Supabase table. Make sure to configure your database schema as needed.
+Contributing
+
+If you’d like to contribute to this project, please fork the repository and submit a pull request with your changes. Make sure to follow the contributing guidelines and ensure your code adheres to the project's coding standards.
+
+### License
+This project is licensed under the MIT License. See the LICENSE file for details.

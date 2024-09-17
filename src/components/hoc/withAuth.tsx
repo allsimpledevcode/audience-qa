@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/utils'
 import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../AppContext'
 
 // Define the props that will be passed to the wrapped component
 interface WithAuthProps {
@@ -66,7 +67,7 @@ export function withAuth<P extends WithAuthProps>(
 
     // If we have a user, render the wrapped component with the user prop
     // if (user) {
-      return <WrappedComponent {...(props as P)} user={user} />
+      return <AppContext.Provider value={{ user: user }}><WrappedComponent {...(props as P)} user={user} /></AppContext.Provider>
     // }
 
     // If we don't have a user, this will never be reached because we redirect in useEffect

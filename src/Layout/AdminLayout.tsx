@@ -25,7 +25,7 @@ const menus = [
 function AdminLayout({ children, title }: AdminLayoutProps) {
     return (
         <>
-            <header className="fixed left-[280px] right-0 top-0 h-[70px] border-b border-b-slate-300 p-6">
+            <header className="fixed left-[280px] right-0 top-0 h-[70px] bg-white border-b border-b-slate-300 p-6">
                 <div className="flex justify-between">
                     <div>
                         <h2 className="font-semibold text-xl">{title}</h2>
@@ -35,15 +35,15 @@ function AdminLayout({ children, title }: AdminLayoutProps) {
                     </div>
                 </div>
             </header>
-            <aside className="w-[280px] border-r border-r-slate-300 fixed top-0 bottom-0 left-0 p-6">
+            <aside className="w-[280px] bg-white border-r border-r-slate-300 fixed top-0 bottom-0 left-0 p-6">
                 <h1 className="font-bold text-2xl text-green-800">Audience QA</h1>
                 <div className="flex flex-col gap-2 mt-8">
                     {
                         menus.map((menu, index) => (
                             <NavLink key={index.toString()} className={({ isActive }: { isActive: boolean }) =>
                                 [
-                                    isActive ? "bg-green-700 text-white" : "",
-                                    "px-4 py-2 hover:bg-green-700 hover:text-white rounded-sm",
+                                    isActive ? "bg-green-200 text-black" : "",
+                                    "px-4 py-2 hover:bg-green-200 hover:text-black rounded-sm",
                                 ].join(" ")
                             } to={menu.path}>{menu.name}</NavLink>
                         ))

@@ -7,8 +7,9 @@ import { Zap, ArrowRight } from "lucide-react"
 import { NavLink, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { supabase } from "@/utils"
+import { withAuth } from "@/components/hoc/withAuth"
 
-export default function SignInPage() {
+function SignInPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [rememberMe, setRememberMe] = useState(false)
@@ -191,3 +192,5 @@ export default function SignInPage() {
         </div>
     )
 }
+
+export default withAuth(SignInPage)

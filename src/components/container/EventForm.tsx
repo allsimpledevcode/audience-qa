@@ -13,6 +13,8 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { supabase } from "@/utils";
+import { AppContext } from "../AppContext";
+import { useContext } from "react";
 
 interface EventFormProps {
     closeSheet: Function
@@ -20,6 +22,7 @@ interface EventFormProps {
 }
 
 function EventForm({ closeSheet, refreshEvents }: EventFormProps) {
+    const appContext = useContext(AppContext);
     const [startDate, setStartDate] = React.useState<Date>()
     const [endDate, setEndDate] = React.useState<Date>()
     const [name, setName] = React.useState('')
@@ -30,7 +33,8 @@ function EventForm({ closeSheet, refreshEvents }: EventFormProps) {
         const payload = {
             name,
             start_date: startDate?.toISOString(),
-            end_date: endDate?.toISOString()
+            end_date: endDate?.toISOString(),
+            user_id: appContext?.user?.id
         }
         const { error } = await supabase.from("events").insert(payload)
 

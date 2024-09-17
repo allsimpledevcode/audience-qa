@@ -47,6 +47,7 @@ function EventAction({ refreshList, event }: { refreshList: Function, event: { i
                     <Button variant="link"><Share1Icon /></Button>
                 </PopoverTrigger>
                 <PopoverContent align="end" className="w-48">
+                    <p className="text-sm text-slate-600">Share URL</p>
                     <div className="relative">
                         <pre className="overflow-auto text-sm bg-gray-200 p-2 rounded-sm">{eventURL}</pre>
                         <Button onClick={copyURL} variant="outline" size="sm" className="p-2 absolute top-[2px] right-[2px]"><CopyIcon /></Button>
